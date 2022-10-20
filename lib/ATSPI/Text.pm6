@@ -310,8 +310,7 @@ role ATSPI::Roles::Text {
                             $end_offset   is rw,
     CArray[Pointer[GError]] $error               = gerror
   ) {
-    my gint $o = $offset;
-
+    my gint  $o        = $offset;
     my gint ($so, $eo) = 0 xx 2;
 
     clear_error;
