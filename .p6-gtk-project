@@ -1,0 +1,11 @@
+prefix=ATSPI
+struct-prefix=St
+modules=ATSPI::Raw::Types
+backups=backup,bitbucket,google-backup,azure-backup,hut
+hfile-prefix=
+lib=atspi
+include-directory=/usr/include/at-spi-2.0/atspi
+exec=p6gtkexec
+subprefixes=
+idir-avail=True
+build-exclude=ATSPI::Raw::Traps
