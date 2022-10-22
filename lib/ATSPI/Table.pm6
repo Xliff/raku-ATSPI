@@ -356,8 +356,8 @@ class ATSPI::Table {
   also does GLib::Roles::Object;
   also does ATSPI::Roles::Table;
 
-  submethod BUILD ( :$atspi-text ) {
-    self.setAtspiTable($atspi-text) if $atspi-text;
+  submethod BUILD ( :$atspi-table ) {
+    self.setAtspiTable($atspi-table) if $atspi-table;
   }
 
   method setAtspiTable (AtspiTableAncestry $_) {
@@ -377,10 +377,10 @@ class ATSPI::Table {
     self!setObject($to-parent);
   }
 
-  method new (AtspiTableAncestry $atspi-text, :$ref = True) {
-    return Nil unless $atspi-text;
+  method new (AtspiTableAncestry $atspi-table, :$ref = True) {
+    return Nil unless $atspi-table;
 
-    my $o = self.bless( :$atspi-text );
+    my $o = self.bless( :$atspi-table );
     $o.ref if $ref;
     $o;
   }
