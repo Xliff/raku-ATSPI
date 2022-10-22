@@ -17,7 +17,7 @@ role ATSPI::Roles::Image {
   }
 
   method ATSPI::Raw::Definitions::AtspiImage { $!ai }
-  method AtspiImage                          { $!ai}
+  method AtspiImage                          { $!ai }
 
   method get_image_description (
     CArray[Pointer[GError]] $error = gerror
@@ -29,15 +29,16 @@ role ATSPI::Roles::Image {
   }
 
   method get_image_extents (
-    Int()                   $ctype,
-    CArray[Pointer[GError]] $error
+    Int()                    $ctype,
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw  = False
   ) {
     my AtspiCoordType $c = $ctype,
 
     clear_error;
     my $r = atspi_image_get_image_extents($!ai, $c, $error);
     set_error($error);
-    $r;
+    propReturnObject($r, $raw, |ATSPI::Rect.getTypePair);
   }
 
   method get_image_locale (CArray[Pointer[GError]] $error = gerror) {
@@ -48,22 +49,26 @@ role ATSPI::Roles::Image {
   }
 
   method get_image_position (
-    AtspiCoordType          $ctype,
-    CArray[Pointer[GError]] $error  = gerror
+    Int()                    $ctype,
+    CArray[Pointer[GError]]  $error  = gerror,
+                            :$raw    = False
   ) {
     my AtspiCoordType $c = $ctype,
 
     clear_error;
     my $r = atspi_image_get_image_position($!ai, $c, $error);
     set_error($error);
-    $r
+    propReturnObject($r, $raw, |ATSPI::Point.getTypePair);
   }
 
-  method get_image_size (CArray[Pointer[GError]] $error = gerror) {
+  method get_image_size (
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
+  ) {
     clear_error;
     my $r = atspi_image_get_image_size($!ai, $error);
     set_error($error);
-    $r;
+    propReturnObject($r, $raw, |ATSPI::Point.getTypePair);
   }
 
   method atspiimage_get_type {
