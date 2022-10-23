@@ -1,5 +1,7 @@
 use v6.c;
 
+use NativeCall;
+
 use ATSPI::Raw::Types;
 use ATSPI::Raw::Image;
 
@@ -13,7 +15,7 @@ role ATSPI::Roles::Image {
     return if $!ai;
 
     my \i = findProperImplementor( self.^attributes );
-    $!ai = cast(AtspiImage, i.get_value(self);
+    $!ai = cast( AtspiImage, i.get_value(self) );
   }
 
   method ATSPI::Raw::Definitions::AtspiImage { $!ai }
