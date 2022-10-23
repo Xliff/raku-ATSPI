@@ -3,9 +3,11 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
 use ATSPI::Raw::Definitions;
+use ATSPI::Raw::Structs;
 
-unit pacakge ATSPI::Raw::Table;
+unit package ATSPI::Raw::Table;
 
 ### /usr/include/at-spi-2.0/atspi/atspi-table.h
 

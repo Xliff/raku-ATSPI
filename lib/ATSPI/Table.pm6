@@ -1,15 +1,17 @@
 use v6.c;
 
+use NativeCall;
+
 use ATSPI::Raw::Types;
 use ATSPI::Raw::Table;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
-role ATSPI::Roles::AtspiTable {
-  has AtspiTable is implementor;
+role ATSPI::Roles::Table {
+  has AtspiTable $!at is implementor;
 
-  method add_column_selection
+  method add_column_selection (
     Int()                   $column,
     CArray[Pointer[GError]] $error   = gerror
   ) {
@@ -21,33 +23,35 @@ role ATSPI::Roles::AtspiTable {
     $r;
   }
 
-  method add_row_selection
+  method add_row_selection (
     Int()                   $row,
     CArray[Pointer[GError]] $error   = gerror
   ) {
     my Int() $r = $row;
 
     clear_error;
-    my $r = so atspi_table_add_row_selection($!at, $r, $error);
+    my $rv = so atspi_table_add_row_selection($!at, $r, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method get_accessible_at (
-    Int()                   $row,
-    Int()                   $column,
-    CArray[Pointer[GError]] $error   = gerror
+    Int()                    $row,
+    Int()                    $column,
+    CArray[Pointer[GError]]  $error   = gerror,
+                            :$raw     = False
   ) {
     my gint ($r, $c) = ($row, $column);
 
     clear_error;
-    my $r = atspi_table_get_accessible_at($!at, $row, $c, $error);
+    my $rv = atspi_table_get_accessible_at($!at, $row, $c, $error);
     set_error($error);
-    propReturnObject($r, $raw, |ATSPI::Accessible.getTypePair);
+    propReturnObject($rv, $raw, |ATSPI::Accessible.getTypePair);
   }
 
   method get_caption (
-    CArray[Pointer[GError]] $error   = gerror
+    CArray[Pointer[GError]]  $error = gerror,
+                            :$raw   = False
   ) {
     clear_error;
     my $r = atspi_table_get_caption($!at, $error);
@@ -87,14 +91,15 @@ role ATSPI::Roles::AtspiTable {
     my gint ($r, $c) = ($row, $column);
 
     clear_error;
-    my $r = atspi_table_get_column_extent_at($!at, $r, $c, $error);
+    my $rv = atspi_table_get_column_extent_at($!at, $r, $c, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method get_column_header (
-    Int()                   $column,
-    CArray[Pointer[GError]] $error   = gerror
+    Int()                    $column,
+    CArray[Pointer[GError]]  $error   = gerror,
+                            :$raw     = False,
   ) {
     my Int() $c = $column;
 
@@ -112,9 +117,9 @@ role ATSPI::Roles::AtspiTable {
     my gint ($r, $c) = ($row, $column);
 
     clear_error;
-    my $r = atspi_table_get_index_at($!at, $r, $c, $error);
+    my $rv = atspi_table_get_index_at($!at, $r, $c, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method get_n_columns (
@@ -185,10 +190,10 @@ role ATSPI::Roles::AtspiTable {
   ) {
     my Int()     $idx              = $index;
     my gint     ($r, $c, $re, $ce) = 0 xx 4;
-    my gboolean  $i                = 0
+    my gboolean  $i                = 0;
 
     clear_error;
-    my $rv = my $r = atspi_table_get_row_column_extents_at_index(
+    my $rv = atspi_table_get_row_column_extents_at_index(
       $!at,
       $idx,
       $r,
@@ -212,9 +217,9 @@ role ATSPI::Roles::AtspiTable {
     my Int() $r = $row;
 
     clear_error;
-    my $r = atspi_table_get_row_description($!at, $r, $error);
+    my $rv = atspi_table_get_row_description($!at, $r, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method get_row_extent_at (
@@ -225,36 +230,36 @@ role ATSPI::Roles::AtspiTable {
     my gint ($r, $c) = ($row, $column);
 
     clear_error;
-    my $r = atspi_table_get_row_extent_at($!at, $row, $column, $error);
+    my $rv = atspi_table_get_row_extent_at($!at, $row, $column, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method get_row_header (
     Int()                    $row,
-    CArray[Pointer[GError]]  $error = gerror
+    CArray[Pointer[GError]]  $error = gerror,
                             :$raw   = False
   ) {
     my Int() $r = $row;
 
     clear_error;
-    my $r = atspi_table_get_row_header($!at, $r, $error);
+    my $rv = atspi_table_get_row_header($!at, $r, $error);
     set_error($error);
-    propReturnObject($r, $raw, |ATSPI::Accessible.getTypePair);
+    propReturnObject($rv, $raw, |ATSPI::Accessible.getTypePair);
   }
 
   method get_selected_columns (
-    CArray[Pointer[GError]]  $error  = gerror
+    CArray[Pointer[GError]]  $error  = gerror,
                             :$garray = False,
                             :$raw    = False
   ) {
     clear_error;
-    my $r = atspi_table_get_selected_columns($!at, $error);
+    my $rv = atspi_table_get_selected_columns($!at, $error);
     set_error($error);
-    return $r if $raw && $garray.not;
-    my $r = GLib::Array.new($r)
-    return $r if $garray && $raw;
-    $r.Array(typed => Int, :signed);
+    return $rv if $raw && $garray.not;
+    $rv = GLib::Array.new($rv);
+    return $rv if $garray && $raw;
+    $rv.Array(typed => Int, :signed);
   }
 
   method get_selected_rows (
@@ -263,12 +268,12 @@ role ATSPI::Roles::AtspiTable {
                             :$raw    = False
   ) {
     clear_error;
-    my $r = atspi_table_get_selected_rows($!at, $error);
+    my $rv = atspi_table_get_selected_rows($!at, $error);
     set_error($error);
-    return $r if $raw && $garray.not;
-    my $r = GLib::Array.new($r)
-    return $r if $garray && $raw;
-    $r.Array(typed => Int, :signed);
+    return $rv if $raw && $garray.not;
+    $rv = GLib::Array.new($rv);
+    return $rv if $garray && $raw;
+    $rv.Array(typed => Int, :signed);
   }
 
   method get_summary (
@@ -305,9 +310,9 @@ role ATSPI::Roles::AtspiTable {
     my Int() $r = $row;
 
     clear_error;
-    my $r = so atspi_table_is_row_selected($!at, $r, $error);
+    my $rv = so atspi_table_is_row_selected($!at, $r, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method is_selected (
@@ -318,9 +323,9 @@ role ATSPI::Roles::AtspiTable {
     my gint ($r, $c) = ($row, $column);
 
     clear_error;
-    my $r = so atspi_table_is_selected($!at, $row, $column, $error);
+    my $rv = so atspi_table_is_selected($!at, $row, $column, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
   method remove_column_selection (
@@ -342,9 +347,9 @@ role ATSPI::Roles::AtspiTable {
     my Int() $r = $row;
 
     clear_error;
-    my $r = atspi_table_remove_row_selection($!at, $r, $error);
+    my $rv = atspi_table_remove_row_selection($!at, $r, $error);
     set_error($error);
-    $r;
+    $rv;
   }
 
 }
