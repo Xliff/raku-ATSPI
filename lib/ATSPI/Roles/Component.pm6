@@ -1,5 +1,7 @@
 use v6.c;
 
+use NativeCall;
+
 use ATSPI::Raw::Types;
 use ATSPI::Raw::Component;
 
@@ -10,10 +12,10 @@ role ATSPI::Roles::Component {
   has AtspiComponent $!ac is implementor;
 
   method roleInit-AtspiComponent {
-    return if $!ai;
+    return if $!ac;
 
     my \i = findProperImplementor( self.^attributes );
-    $!ai = cast(AtspiComponent, i.get_value(self);
+    $!ac = cast( AtspiComponent, i.get_value(self) );
   }
 
   method ATSPI::Raw::Definitions::AtspiComponent { $!ac }
@@ -137,7 +139,7 @@ role ATSPI::Roles::Component {
     Int()                   $y,
     CArray[Pointer[GError]] $error = gerror
   ) {
-    my AtspiCoordType  $c                =  $ctype;
+    my AtspiCoordType  $c                =  $coords;
     my gint           ($xx, $yy)         = ($x, $y);
 
     clear_error;
@@ -207,7 +209,7 @@ class ATSPI::Component {
   method setAtspiComponent (AtspiComponentAncestry $_) {
     my $to-parent;
 
-    $!ai = do {
+    $!ac = do {
       when AtspiComponent {
         $to-parent = cast(GObject, $_);
         $_;

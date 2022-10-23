@@ -14,6 +14,8 @@ class AtspiHypertext  is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiTable      is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiText       is repr<CPointer> does GLib::Roles::Pointers is export { }
 
+class AtspiComponent is repr<CPointer> does GLib::Roles::Pointers is export { }
+
 constant ATSPI_LOCALE_TYPE_COUNT                     is export = (5+1);
 constant ATSPI_COORD_TYPE_COUNT                      is export = (2+1);
 constant ATSPI_SORTORDER_COUNT                       is export = (7+1);
