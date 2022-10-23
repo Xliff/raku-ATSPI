@@ -3,8 +3,13 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
+use GLib::Compat::Definitions;
 use GLib::Raw::Definitions;
 use GLib::Raw::Object;
+use GLib::Raw::Structs;
+use GIO::Raw::Definitions;
+use GIO::Raw::Structs;
+use GIO::DBus::Raw::Types;
 use ATSPI::Raw::Definitions;
 use ATSPI::Raw::Enums;
 
@@ -12,17 +17,23 @@ use GLib::Roles::Pointers;
 
 unit package ATSPI::Raw::Structs;
 
+class AtspiAccessible
+  is   repr<CStruct>
+  does GLib::Roles::Pointers
+  is   export
+{ ... }
+
 class AtspiApplication is repr<CStruct> does GLib::Roles::Pointers is export {
-  HAS GObject         $.parent;
-  has GHashTable      $!hash;
-  has Str             $!bus_name;
-  has DBusConnection  $!bus;
-  has AtspiAccessible $!root;
-  has AtspiCache      $.cache             is rw;
-  has Str             $!toolkit_name;
-  has Str             $!toolkit_version;
-  has Str             $!atspi_version;
-  HAS timeval         $.time_added;
+  HAS GObject          $.parent;
+  has GHashTable       $!hash;
+  has Str              $!bus_name;
+  has GDBusConnection  $!bus;
+  has AtspiAccessible  $!root;
+  has AtspiCache       $.cache             is rw;
+  has Str              $!toolkit_name;
+  has Str              $!toolkit_version;
+  has Str              $!atspi_version;
+  HAS timeval          $.time_added;
 
   method cache-enum is also<cache_enum> {
     AtspiCacheEnum( $!cache );
@@ -70,4 +81,168 @@ class AtspiApplication is repr<CStruct> does GLib::Roles::Pointers is export {
       STORE => -> $, \v { $!atspi_version := v };
   }
 
+}
+
+class AtspiObject is repr<CStruct> is export {
+	has GObject          $!parent;
+	has AtspiApplication $!app   ;
+	has Str             $!path  ;
+}
+
+class AtspiStateSet is repr<CStruct> is export {
+	has GObject          $!parent    ;
+	has AtspiAccessible  $!accessible;
+	has gint64           $!states    ;
+}
+
+class AtspiAccessible {
+	has AtspiObject            $!parent           ;
+	has AtspiAccessible        $!accessible_parent;
+	has GPtrArray              $!children         ;
+	has AtspiRole              $!role             ;
+	has gint                   $!interfaces       ;
+	has Str                   $!name             ;
+	has Str                   $!description      ;
+	has AtspiStateSet          $!states           ;
+	has GHashTable             $!attributes       ;
+	has guint                  $!cached_properties;
+	has Pointer $!priv             ;
+}
+
+# class AtspiApplicationClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+class AtspiDevice is repr<CStruct> is export {
+	has GObject $!parent;
+}
+
+class AtspiDeviceEvent is repr<CStruct> is export {
+	has AtspiEventType $!type        ;
+	has guint          $!id          ;
+	has gushort        $!hw_code     ;
+	has gushort        $!modifiers   ;
+	has guint          $!timestamp   ;
+	has Str          $!event_string;
+	has gboolean       $!is_text     ;
+}
+
+class AtspiDeviceLegacy is repr<CStruct> is export {
+	has AtspiDevice $!parent;
+}
+
+# class AtspiDeviceLegacyClass is repr<CStruct> is export {
+# 	has AtspiDeviceClass $!parent_class;
+# }
+
+class AtspiDeviceListener is repr<CStruct> is export {
+	has GObject $!parent   ;
+	has guint   $!id       ;
+	has GList   $!callbacks;
+}
+
+class AtspiEvent is repr<CStruct> is export {
+	has Str           $!type    ;
+	has AtspiAccessible $!source  ;
+	has gint            $!detail1 ;
+	has gint            $!detail2 ;
+	has GValue          $!any_data;
+	has AtspiAccessible $!sender  ;
+}
+
+class AtspiEventListener is repr<CStruct> is export {
+	has GObject              $!parent      ;
+	has Pointer $!callback    ; #= AtspiEventListenerCB
+	has Pointer                 $!user_data   ;
+	has Pointer        $!cb_destroyed; #= GDestroyNotify
+}
+
+# class AtspiEventListenerClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+class AtspiEventListenerMode is repr<CStruct> is export {
+	has gboolean $!synchronous;
+	has gboolean $!preemptive ;
+	has gboolean $!global     ;
+}
+
+class AtspiHyperlink is repr<CStruct> is export {
+	has AtspiObject $!parent;
+}
+
+# class AtspiHyperlinkClass is repr<CStruct> is export {
+# 	has AtspiObjectClass $!parent_class;
+# }
+
+class AtspiKeyDefinition is repr<CStruct> is export {
+	has gint  $!keycode  ;
+	has gint  $!keysym   ;
+	has Str $!keystring;
+	has guint $!modifiers;
+}
+
+class AtspiKeySet is repr<CStruct> is export {
+	has guint   $!keysyms   ;
+	has gushort $!keycodes  ;
+	has Str   $!keystrings;
+	has gshort  $!len       ;
+}
+
+class AtspiMatchRule is repr<CStruct> is export {
+	has GObject                  $!parent            ;
+	has AtspiStateSet            $!states            ;
+	has AtspiCollectionMatchType $!statematchtype    ;
+	has GHashTable               $!attributes        ;
+	has AtspiCollectionMatchType $!attributematchtype;
+	has GArray                   $!interfaces        ;
+	has AtspiCollectionMatchType $!interfacematchtype;
+	has gint                     $!roles             ;
+	has AtspiCollectionMatchType $!rolematchtype     ;
+	has gboolean                 $!invert            ;
+}
+
+# class AtspiMatchRuleClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+# class AtspiObjectClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+class AtspiPoint is repr<CStruct> is export {
+	has gint $!x;
+	has gint $!y;
+}
+
+class AtspiRange is repr<CStruct> is export {
+	has gint $!start_offset;
+	has gint $!end_offset  ;
+}
+
+class AtspiRect is repr<CStruct> is export {
+	has gint $!x     ;
+	has gint $!y     ;
+	has gint $!width ;
+	has gint $!height;
+}
+
+class AtspiRelation is repr<CStruct> is export {
+	has GObject           $!parent       ;
+	has AtspiRelationType $!relation_type;
+	has GArray            $!targets      ;
+}
+
+# class AtspiRelationClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+# class AtspiStateSetClass is repr<CStruct> is export {
+# 	has GObjectClass $!parent_class;
+# }
+
+class AtspiTextRange is repr<CStruct> is export {
+	has gint  $!start_offset;
+	has gint  $!end_offset  ;
+	has Str $!content     ;
 }

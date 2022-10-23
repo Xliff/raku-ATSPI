@@ -2,9 +2,13 @@ use v6.c;
 
 use GLib::Raw::Definitions;
 
+use GLib::Roles::Pointers;
+
 unit package ATSPI::Raw::Definitions;
 
 constant atspi is export = 'atspi-1.0,v0';
+
+class AtspiImage      is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 constant ATSPI_LOCALE_TYPE_COUNT                     is export = (5+1);
 constant ATSPI_COORD_TYPE_COUNT                      is export = (2+1);
