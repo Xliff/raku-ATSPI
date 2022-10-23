@@ -1,7 +1,13 @@
 use v6.c;
 
+use NativeCall;
+
+use GLib::Raw::Traits;
 use ATSPI::Raw::Types;
 use ATSPI::Raw::Text;
+
+use GLib::Roles::Implementor;
+use GLib::Roles::Object;
 
 role ATSPI::Roles::Text {
   has AtspiText $!at is implementor;
@@ -14,7 +20,7 @@ role ATSPI::Roles::Text {
 
     my \i = findProperImplementor( self.^attributes );
     $!at  = cast( AtspiText, i.get_value(self) );
-  )
+  }
 
   method add_selection (
     Int()                   $start_offset,
@@ -116,8 +122,8 @@ role ATSPI::Roles::Text {
       $w,
       $h,
       $t,
-      $cX,
-      $cY,
+      $cx,
+      $cy,
       $error
     );
     set_error($error);
@@ -242,7 +248,7 @@ role ATSPI::Roles::Text {
     Int()                   $end_offset,
     CArray[Pointer[GError]] $error          = gerror
   ) {
-    my gint ($so, $eo) = ($start_offset, $end_offset)
+    my gint ($so, $eo) = ($start_offset, $end_offset);
 
     clear_error;
     my $r = atspi_text_get_text($!at, $so, $eo, $error);
@@ -336,7 +342,7 @@ role ATSPI::Roles::Text {
   method get_type {
     state ($n, $t);
 
-    unstable_get_tgype( self.^name, &atspi_text_get_type, $n, $t );
+    unstable_get_type( self.^name, &atspi_text_get_type, $n, $t );
   }
 
   method remove_selection (
@@ -357,7 +363,7 @@ role ATSPI::Roles::Text {
     CArray[Pointer[GError]] $error
   ) {
     my gint            ($so, $eo) = ($start_offset, $end_offset);
-    my AtspiScrolltype  $t        =  $type;
+    my AtspiScrollType  $t        =  $type;
 
     clear_error;
     my $r = so atspi_text_scroll_substring_to($!at, $so, $eo, $t, $error);

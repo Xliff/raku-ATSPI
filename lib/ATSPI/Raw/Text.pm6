@@ -3,7 +3,10 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
 use ATSPI::Raw::Definitions;
+use ATSPI::Raw::Enums;
+use ATSPI::Raw::Structs;
 
 unit package ATSPI::Raw::Text;
 
@@ -62,7 +65,7 @@ sub atspi_text_get_attributes (
   gint                    $start_offset is rw,
   gint                    $end_offset   is rw,
   CArray[Pointer[GError]] $error
-
+)
   returns GHashTable
   is      native(atspi)
   is      export
