@@ -3,10 +3,13 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
 use ATSPI::Raw::Definitions;
+use ATSPI::Raw::Enums;
+use ATSPI::Raw::Structs;
 
 unit package ATSPI::Raw::Accessible;
-W
+
 ### /usr/include/at-spi-2.0/atspi/atspi-accessible.h
 
 sub atspi_accessible_clear_cache (AtspiAccessible $obj)

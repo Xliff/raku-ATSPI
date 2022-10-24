@@ -1,11 +1,29 @@
 use v6.c;
 
+use NativeCall;
+
 use ATSPI::Raw::Types;
 use ATSPI::Raw::Accessible;
 
+use GLib::Array;
+use ATSPI::Hyperlink;
 use ATSPI::Object;
+use ATSPI::StateSet;
 
 use GLib::Roles::Implementor;
+
+use ATSPI::Roles::Action;
+use ATSPI::Roles::Collection;
+use ATSPI::Roles::Component;
+use ATSPI::Roles::Document;
+use ATSPI::Roles::EditableText;
+use ATSPI::Roles::Hypertext;
+use ATSPI::Roles::Image;
+use ATSPI::Roles::Selection;
+use ATSPI::Roles::TableCell;
+use ATSPI::Roles::Table;
+use ATSPI::Roles::Text;
+use ATSPI::Roles::Value;
 
 class ATSPI::Accessible is ATSPI::Object {
   also does Positional;
@@ -27,8 +45,8 @@ class ATSPI::Accessible is ATSPI::Object {
     $mrv;
   }
 
-  method get_action {
-    propReturnObject
+  method get_action ( :$raw = False ) {
+    propReturnObject(
       atspi_accessible_get_action($!aa),
       $raw,
       |ATSPI::Action.getTypePair
@@ -36,7 +54,7 @@ class ATSPI::Accessible is ATSPI::Object {
   }
 
   method get_action_iface ( :$raw = False) {
-    propReturnObject
+    propReturnObject(
       atspi_accessible_get_action_iface($!aa),
       $raw,
       |ATSPI::Action.getTypePair
@@ -71,18 +89,14 @@ class ATSPI::Accessible is ATSPI::Object {
   }
 
   method get_attributes_as_array (
-    CArray[Pointer[GError]]  $error  = gerror
+    CArray[Pointer[GError]]  $error  = gerror,
                             :$raw    = False,
-                            :$array  = True
+                            :$garray = True
   ) {
     clear_error;
     my $mrv = atspi_accessible_get_attributes_as_array($!aa, $error);
     set_error($error);
-    $mrv;
-    return $mrv if $raw;
-    $mrv = GLib::Array.new($mrv);
-    return $mrv unless $array;
-    $mrv.Array;
+    returnGArray($mrv, $raw, $garray, Str);
   }
 
   method get_child_at_index (
@@ -176,7 +190,7 @@ class ATSPI::Accessible is ATSPI::Object {
     propReturnObject(
       atspi_accessible_get_hyperlink($!aa),
       $raw,
-      |ATSPI::HyperLink.getTypePair
+      |ATSPI::Hyperlink.getTypePair
     );
   }
 
@@ -184,7 +198,7 @@ class ATSPI::Accessible is ATSPI::Object {
     propReturnObject(
       atspi_accessible_get_hypertext($!aa),
       $raw,
-      |ATSPI::HyperText.getTypePair
+      |ATSPI::Hypertext.getTypePair
     );
   }
 
@@ -192,7 +206,7 @@ class ATSPI::Accessible is ATSPI::Object {
     propReturnObject(
       atspi_accessible_get_hypertext_iface($!aa),
       $raw,
-      |ATSPI::HyperText.getTypePair
+      |ATSPI::Hypertext.getTypePair
     );
   }
 
@@ -211,14 +225,13 @@ class ATSPI::Accessible is ATSPI::Object {
     );
   }
 
-  method get_image_iface ( :$raw = False, :$array = True ) {
-    my $mrv = atspi_accessible_get_image_iface($!aa);
-    return $mrv if $raw;
-    $mrv = GLib::Array.new($mrv);
-    return $mrv unless $array;
-    $mrv .= .Array
-    return $mrv unless $object;
-    $mrv.map({ ATSPI::Image.new($_) });
+  method get_image_iface ( :$raw = False, :$garray = True ) {
+    returnGArray(
+      atspi_accessible_get_image_iface($!aa),
+      $raw,
+      $garray,
+      |ATSPI::Image.getTypePair
+    );
   }
 
   method get_index_in_parent (CArray[Pointer[GError]] $error = gerror) {
@@ -228,11 +241,13 @@ class ATSPI::Accessible is ATSPI::Object {
     $mrv;
   }
 
-  method get_interfaces ( :$raw = False, :$array = True ) {
-    atspi_accessible_get_interfaces($!aa);
-    return $mrv if $raw;
-    $mrv = GLib::Array.new($mrv);
-    return $mrv unless $array;
+  method get_interfaces ( :$raw = False, :$garray = True ) {
+    returnGArray(
+      atspi_accessible_get_interfaces($!aa),
+      $raw,
+      $garray,
+      Str
+    );
   }
 
   method get_localized_role_name (CArray[Pointer[GError]] $error = gerror) {
@@ -271,27 +286,22 @@ class ATSPI::Accessible is ATSPI::Object {
   }
 
   method get_relation_set (
-    CArray[Pointer[GError]] $error   = gerror,
-                            :$raw    = False.
-                            :$array  = True,
-                            :$object = True
+    CArray[Pointer[GError]] $error    = gerror,
+                            :$raw     = False,
+                            :$garray  = True,
+                            :$object  = True
   ) {
     clear_error;
     my $mrv = atspi_accessible_get_relation_set($!aa, $error);
     set_error($error);
-    return $mrv if $raw;
-    $mrv = GLib::Array.new($mrv);
-    return $mrv unless $array;
-    $mrv = $mrv.Array
-    return $mrv unless $object;
-    $mrv.map({ ATSPI::Relation.new($_) });
+    returnGArray($mrv, $raw, $garray, |ATSPI::Relation.getTypePair);
   }
 
   method get_role (CArray[Pointer[GError]] $error = gerror, :$raw = False) {
     clear_error;
     my $mrv = atspi_accessible_get_role($!aa, $error);
     set_error($error);
-    proppReturnObject($mrv, $raw, |ATSPI::Role.getTypePair)
+    propReturnObject($mrv, $raw, |ATSPI::Role.getTypePair)
   }
 
   method get_role_name (CArray[Pointer[GError]] $error = gerror) {
@@ -301,7 +311,7 @@ class ATSPI::Accessible is ATSPI::Object {
     $mrv;
   }
 
-  method get_selection {
+  method get_selection ( :$raw = False ) {
     propReturnObject(
       atspi_accessible_get_selection($!aa);
       $raw,
@@ -309,7 +319,7 @@ class ATSPI::Accessible is ATSPI::Object {
     )
   }
 
-  method get_selection_iface {
+  method get_selection_iface ( :$raw = False ) {
     propReturnObject(
       atspi_accessible_get_selection_iface($!aa),
       $raw,
@@ -317,7 +327,7 @@ class ATSPI::Accessible is ATSPI::Object {
     )
   }
 
-  method get_state_set (:$raw = False ) {
+  method get_state_set ( :$raw = False ) {
     propReturnObject(
       atspi_accessible_get_state_set($!aa),
       $raw,
@@ -325,7 +335,7 @@ class ATSPI::Accessible is ATSPI::Object {
     )
   }
 
-  method get_table {
+  method get_table ( :$raw = False ) {
     propReturnObject(
       atspi_accessible_get_table($!aa),
       $raw,
@@ -333,7 +343,7 @@ class ATSPI::Accessible is ATSPI::Object {
     )
   }
 
-  method get_table_cell {
+  method get_table_cell ( :$raw = False ) {
     propReturnObject(
       atspi_accessible_get_table_cell($!aa);
       $raw,
@@ -398,7 +408,7 @@ class ATSPI::Accessible is ATSPI::Object {
       atspi_accessible_get_value_iface($!aa),
       $raw,
       |ATSPI::Value.getTypePair
-    );s
+    );
   }
 
   method set_cache_mask (AtspiCache() $mask) {
