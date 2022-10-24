@@ -16,6 +16,7 @@ class AtspiImage        is repr<CPointer> does GLib::Roles::Pointers is export {
 class AtspiHypertext    is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiSelection    is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiTable        is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiTableCell    is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiText         is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class AtspiComponent is repr<CPointer> does GLib::Roles::Pointers is export { }
