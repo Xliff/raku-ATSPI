@@ -24,7 +24,7 @@ role ATSPI::Roles::EditableText {
   method copy_text (
     Int()                   $start_pos,
     Int()                   $end_pos,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gint ($s, $e) = ($start_pos, $end_pos);
 
@@ -37,7 +37,7 @@ role ATSPI::Roles::EditableText {
   method cut_text (
     Int()                   $start_pos,
     Int()                   $end_pos,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gint ($s, $e) = ($start_pos, $end_pos);
 
@@ -48,9 +48,9 @@ role ATSPI::Roles::EditableText {
   }
 
   method delete_text (
-    Int()                   $start_pos,
-    Int()                   $end_pos,
-    CArray[Pointer[GError]] $error = gerror
+    Int()                    $start_pos,
+    Int()                    $end_pos,
+    CArray[Pointer[GError]]  $error      = gerror
   ) {
     my gint ($s, $e) = ($start_pos, $end_pos);
 
@@ -70,7 +70,7 @@ role ATSPI::Roles::EditableText {
     Int()                   $position,
     Str                     $text,
     Int()                   $length,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error     = gerror
   ) {
     my gint ($p, $l) = ($position, $length);
 
@@ -82,7 +82,7 @@ role ATSPI::Roles::EditableText {
 
   method paste_text (
     Int()                   $position,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error     = gerror
   ) {
     my gint $p = $position;
 
@@ -96,7 +96,7 @@ role ATSPI::Roles::EditableText {
     Str()                   $attributes,
     Int()                   $start_pos,
     Int()                   $end_pos,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error       = gerror
   ) {
     my gint ($s, $e) = ($start_pos, $end_pos);
 
@@ -114,7 +114,7 @@ role ATSPI::Roles::EditableText {
 
   method set_text_contents (
     Str()                   $new_contents,
-    CArray[Pointer[GError]] $error = gerror
+    CArray[Pointer[GError]] $error         = gerror
   ) {
     clear_error;
     my $r = so atspi_editable_text_set_text_contents(
@@ -131,7 +131,7 @@ role ATSPI::Roles::EditableText {
 our subset AtspiEditableTextAncestry is export of Mu
   where AtspiEditableText | GObject;
 
-class ATSPI::Action {
+class ATSPI::EditableText {
   also does GLib::Roles::Object;
   also does ATSPI::Roles::EditableText;
 
