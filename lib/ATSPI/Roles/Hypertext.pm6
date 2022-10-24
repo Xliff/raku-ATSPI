@@ -10,15 +10,15 @@ use GLib::Roles::Object;
 role ATSPI::Roles::Hypertext {
   has AtspiHypertext $!ah is implementor;
 
-  method roleInit-AtspiHyperText {
+  method roleInit-AtspiHypertext {
     return if $!ah;
 
     my \i = findProperImplementor( self.^attributes );
     $!ah  = cast( AtspiHypertext, i.get_value(self) );
   }
 
-  method ATSPI::Raw::Definitions::AtspiHyperText { $!ah }
-  method AtspiHyperText                          { $!ah }
+  method ATSPI::Raw::Definitions::AtspiHypertext { $!ah }
+  method AtspiHypertext                          { $!ah }
 
   method get_link (
     Int()                   $link_index,
