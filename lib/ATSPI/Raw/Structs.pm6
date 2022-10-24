@@ -84,19 +84,31 @@ class AtspiApplication is repr<CStruct> does GLib::Roles::Pointers is export {
 }
 
 class AtspiObject is repr<CStruct> is export {
-	has GObject          $!parent;
+	HAS GObject          $.parent;
 	has AtspiApplication $!app   ;
-	has Str             $!path  ;
+	has Str              $!path  ;
+
+  method app is rw {
+    Proxy.new:
+      FETCH => -> $     { $!app },
+      STORE => -> $, \v { $!app := v };
+  }
+
+  method path is rw {
+    Proxy.new:
+      FETCH => -> $     { $!path },
+      STORE => -> $, \v { $!path := v };
+  }
 }
 
 class AtspiStateSet is repr<CStruct> is export {
-	has GObject          $!parent    ;
+	HAS GObject          $.parent    ;
 	has AtspiAccessible  $!accessible;
 	has gint64           $!states    ;
 }
 
 class AtspiAccessible {
-	has AtspiObject            $!parent           ;
+	HAS AtspiObject            $.parent           ;
 	has AtspiAccessible        $!accessible_parent;
 	has GPtrArray              $!children         ;
 	has AtspiRole              $!role             ;
@@ -114,7 +126,7 @@ class AtspiAccessible {
 # }
 
 class AtspiDevice is repr<CStruct> is export {
-	has GObject $!parent;
+	HAS GObject $.parent;
 }
 
 class AtspiDeviceEvent is repr<CStruct> is export {
@@ -128,7 +140,7 @@ class AtspiDeviceEvent is repr<CStruct> is export {
 }
 
 class AtspiDeviceLegacy is repr<CStruct> is export {
-	has AtspiDevice $!parent;
+	HAS AtspiDevice $.parent;
 }
 
 # class AtspiDeviceLegacyClass is repr<CStruct> is export {
@@ -136,7 +148,7 @@ class AtspiDeviceLegacy is repr<CStruct> is export {
 # }
 
 class AtspiDeviceListener is repr<CStruct> is export {
-	has GObject $!parent   ;
+	HAS GObject $.parent   ;
 	has guint   $!id       ;
 	has GList   $!callbacks;
 }
@@ -151,7 +163,7 @@ class AtspiEvent is repr<CStruct> is export {
 }
 
 class AtspiEventListener is repr<CStruct> is export {
-	has GObject              $!parent      ;
+	HAS GObject              $.parent      ;
 	has Pointer $!callback    ; #= AtspiEventListenerCB
 	has Pointer                 $!user_data   ;
 	has Pointer        $!cb_destroyed; #= GDestroyNotify
@@ -168,7 +180,7 @@ class AtspiEventListenerMode is repr<CStruct> is export {
 }
 
 class AtspiHyperlink is repr<CStruct> is export {
-	has AtspiObject $!parent;
+	HAS AtspiObject $.parent;
 }
 
 # class AtspiHyperlinkClass is repr<CStruct> is export {
@@ -190,7 +202,7 @@ class AtspiKeySet is repr<CStruct> is export {
 }
 
 class AtspiMatchRule is repr<CStruct> is export {
-	has GObject                  $!parent            ;
+	HAS GObject                  $.parent            ;
 	has AtspiStateSet            $!states            ;
 	has AtspiCollectionMatchType $!statematchtype    ;
 	has GHashTable               $!attributes        ;
@@ -228,7 +240,7 @@ class AtspiRect is repr<CStruct> is export {
 }
 
 class AtspiRelation is repr<CStruct> is export {
-	has GObject           $!parent       ;
+	HAS GObject           $.parent       ;
 	has AtspiRelationType $!relation_type;
 	has GArray            $!targets      ;
 }
