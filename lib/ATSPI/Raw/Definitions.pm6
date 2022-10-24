@@ -8,13 +8,14 @@ unit package ATSPI::Raw::Definitions;
 
 constant atspi is export = 'atspi-1.0,v0';
 
-class AtspiAction     is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiCollection is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiDocument   is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiImage      is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiHypertext  is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiTable      is repr<CPointer> does GLib::Roles::Pointers is export { }
-class AtspiText       is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiAction       is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiCollection   is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiDocument     is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiEditableText is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiImage        is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiHypertext    is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiTable        is repr<CPointer> does GLib::Roles::Pointers is export { }
+class AtspiText         is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class AtspiComponent is repr<CPointer> does GLib::Roles::Pointers is export { }
 
