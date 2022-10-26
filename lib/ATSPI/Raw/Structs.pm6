@@ -6,6 +6,7 @@ use NativeCall;
 use GLib::Compat::Definitions;
 use GLib::Raw::Definitions;
 use GLib::Raw::Object;
+use GLib::Raw::Subs;
 use GLib::Raw::Structs;
 use GIO::Raw::Definitions;
 use GIO::Raw::Structs;
@@ -130,13 +131,27 @@ class AtspiDevice is repr<CStruct> is export {
 }
 
 class AtspiDeviceEvent is repr<CStruct> is export {
-	has AtspiEventType $!type        ;
-	has guint          $!id          ;
-	has gushort        $!hw_code     ;
-	has gushort        $!modifiers   ;
-	has guint          $!timestamp   ;
-	has Str          $!event_string;
-	has gboolean       $!is_text     ;
+	has AtspiEventType $!type;
+	has guint          $.id            is rw;
+	has gushort        $.hw_code       is rw;
+	has gushort        $.modifiers     is rw;
+	has guint          $.timestamp     is rw;
+	has Str            $!event_string;
+	has gboolean       $.is_text       is rw;
+
+  method type(:$enum) is rw {
+    Proxy.new:
+      FETCH => -> $           { $enum ?? AtspiEventTypeEnum($!type)
+                                      !! $!type },
+      STORE => -> $, Int() \v { $!type = v; }
+  }
+
+  method event_string is also<event-string> is rw {
+    Proxy.new:
+      FETCH => -> $           { $!event_string },
+      STORE => -> $, Str() \v { $!event_string := v };
+  }
+
 }
 
 class AtspiDeviceLegacy is repr<CStruct> is export {
@@ -154,12 +169,24 @@ class AtspiDeviceListener is repr<CStruct> is export {
 }
 
 class AtspiEvent is repr<CStruct> is export {
-	has Str           $!type    ;
+	has Str             $.type    ;
 	has AtspiAccessible $!source  ;
-	has gint            $!detail1 ;
-	has gint            $!detail2 ;
+	has gint            $.detail1   is rw;
+	has gint            $.detail2   is rw;
 	has GValue          $!any_data;
 	has AtspiAccessible $!sender  ;
+
+  method source ( :$raw = False ) {
+    propReturnObject($!source, $raw, |::('ATSPI::Accessible').getTypePair)
+  }
+
+  method any_data ( :$raw = False) is also<any-data> {
+    propReturnObject($!any_data, $raw, |::('GLib::Value').getTypePair)
+  }
+
+  method sender ( :$raw = False ) {
+    propReturnObject($!sender, $raw, |::('ATSPI::Accessible').getTypePair)
+  }
 }
 
 class AtspiEventListener is repr<CStruct> is export {
@@ -174,9 +201,9 @@ class AtspiEventListener is repr<CStruct> is export {
 # }
 
 class AtspiEventListenerMode is repr<CStruct> is export {
-	has gboolean $!synchronous;
-	has gboolean $!preemptive ;
-	has gboolean $!global     ;
+	has gboolean $.synchronous;
+	has gboolean $.preemptive ;
+	has gboolean $.global     ;
 }
 
 class AtspiHyperlink is repr<CStruct> is export {
@@ -190,7 +217,7 @@ class AtspiHyperlink is repr<CStruct> is export {
 class AtspiKeyDefinition is repr<CStruct> is export {
 	has gint  $!keycode  ;
 	has gint  $!keysym   ;
-	has Str $!keystring;
+	has Str   $!keystring;
 	has guint $!modifiers;
 }
 
@@ -223,20 +250,20 @@ class AtspiMatchRule is repr<CStruct> is export {
 # }
 
 class AtspiPoint is repr<CStruct> is export {
-	has gint $!x;
-	has gint $!y;
+	has gint $.x is rw;
+	has gint $.y is rw;
 }
 
 class AtspiRange is repr<CStruct> is export {
-	has gint $!start_offset;
-	has gint $!end_offset  ;
+	has gint $.start_offset is rw;
+	has gint $.end_offset   is rw;
 }
 
 class AtspiRect is repr<CStruct> is export {
-	has gint $!x     ;
-	has gint $!y     ;
-	has gint $!width ;
-	has gint $!height;
+	has gint $.x      is rw;
+	has gint $.y      is rw;
+	has gint $.width  is rw;
+	has gint $.height is rw;
 }
 
 class AtspiRelation is repr<CStruct> is export {
