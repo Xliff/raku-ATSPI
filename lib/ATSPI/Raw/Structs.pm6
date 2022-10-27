@@ -152,6 +152,15 @@ class AtspiDeviceEvent is repr<CStruct> is export {
       STORE => -> $, Str() \v { $!event_string := v };
   }
 
+  method get_type {
+    sub atspi_device_event_get_type
+      returns GType
+      is      native(atspi)
+      is      export
+    { * }
+    
+    atspi_device_event_get_type();
+  }
 }
 
 class AtspiDeviceLegacy is repr<CStruct> is export {
