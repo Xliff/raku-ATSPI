@@ -1,5 +1,7 @@
 use v6.c;
 
+use Method::Also;
+
 use NativeCall;
 
 use GLib::Array;
@@ -10,14 +12,23 @@ use ATSPI::Raw::Registry;
 use GLib::Roles::StaticClass;
 
 class ATSPI::Registry {
+  also does Positional;
   also does GLib::Roles::StaticClass;
+
+  method Array {
+    my @rv;
+    @rv.push: self[$_] for ^self.elems;
+    @rv;
+  }
 
   method generate_keyboard_event (
     Int()                   $keyval,
     Str()                   $keystring,
     Int()                   $synth_type,
     CArray[Pointer[GError]] $error       = gerror
-  ) {
+  )
+    is also<generate-keyboard-event>
+  {
     my glong             $k = $keyval;
     my AtspiKeySynthType $s = $synth_type,
 
@@ -32,7 +43,9 @@ class ATSPI::Registry {
     Int()                   $y,
     Str()                   $name,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<generate-mouse-event>
+  {
     my glong ($xx, $yy) = ($x, $y);
 
     clear_error;
@@ -45,7 +58,7 @@ class ATSPI::Registry {
     self.get_desktop(0);
   }
 
-  method get_desktop (Int $desktop, :$raw = False) {
+  method get_desktop (Int $desktop, :$raw = False) is also<get-desktop> {
     my gint $d = $desktop;
 
     propReturnObject(
@@ -55,11 +68,25 @@ class ATSPI::Registry {
     );
   }
 
-  method get_desktop_count {
+  method AT-POS (\k) {
+    self.get-desktop(k);
+  }
+
+  method get_desktop_count
+    is also<
+      get-desktop-count
+      elems
+    >
+  {
     atspi_get_desktop_count();
   }
 
-  method get_desktop_list ( :$raw = False, :$garray = False ) {
+  method get_desktop_list ( :$raw = False, :$garray = False )
+    is also<
+      get-desktop-list
+      desktop-list
+    >
+  {
     returnGArray(
       atspi_get_desktop_list(),
       $raw,
@@ -68,11 +95,15 @@ class ATSPI::Registry {
     );
   }
 
-  method set_reference_window (AtspiAccessible() $window) {
+  method set_reference_window (AtspiAccessible() $window)
+    is also<set-reference-window>
+  {
     atspi_set_reference_window($window);
   }
 
 }
+
+constant ATSPI-Registry is export := ATSPI::Registry;
 
 
 use MONKEY-TYPING;
@@ -83,7 +114,9 @@ augment class ATSPI::DeviceListener {
   method atspi_deregister_device_event_listener (
     gpointer                $filter, # cw: There is a chance this is a Callable
     CArray[Pointer[GError]] $error   = gerror
-  ) {
+  )
+    is also<atspi-deregister-device-event-listener>
+  {
     atspi_deregister_device_event_listener(
       self.AtspiDeviceListener,
       $filter,
@@ -96,7 +129,9 @@ augment class ATSPI::DeviceListener {
     Int()                   $modmask,
     Int()                   $event_types,
     CArray[Pointer[GError]] $error        = gerror
-  ) {
+  )
+    is also<atspi-deregister-keystroke-listener>
+  {
     my AtspiKeyMaskType  $m = $modmask;
     my AtspiKeyEventMask $e = $event_types;
 
@@ -113,7 +148,9 @@ augment class ATSPI::DeviceListener {
     Int()                   $event_types,
     gpointer                $filter,
     CArray[Pointer[GError]] $error        = gerror;
-  ) {
+  )
+    is also<atspi-register-device-event-listener>
+  {
     my AtspiDeviceEventMask $e = $event_types,
 
     clear_error;
@@ -133,7 +170,9 @@ augment class ATSPI::DeviceListener {
     Int()                   $event_types,
     Int()                   $sync_type,
     CArray[Pointer[GError]] $error         = gerror
-  ) {
+  )
+    is also<atspi-register-keystroke-listener>
+  {
     my AtspiKeyMaskType         $m = $modmask;
     my AtspiKeyEventMask        $e = $event_types;
     my AtspiKeyListenerSyncType $s = $sync_type;
