@@ -1,76 +1,154 @@
-  method atspi_deregister_device_event_listener (
-    AtspiDeviceListener     $listener,
-    Pointer                 $filter,
-    CArray[Pointer[GError]] $error
+use v6.c;
+
+use NativeCall;
+
+use GLib::Array;
+
+use ATSPI::Raw::Types;
+use ATSPI::Raw::Registry;
+
+use GLib::Roles::StaticClass;
+
+class ATSPI::Registry {
+  also does GLib::Roles::StaticClass;
+
+  method generate_keyboard_event (
+    Int()                   $keyval,
+    Str()                   $keystring,
+    Int()                   $synth_type,
+    CArray[Pointer[GError]] $error       = gerror
   ) {
-    atspi_deregister_device_event_listener($!ar, $filter, $error);
+    my glong             $k = $keyval;
+    my AtspiKeySynthType $s = $synth_type,
+
+    clear_error;
+    my $rv = atspi_generate_keyboard_event($k, $keystring, $s, $error);
+    set_error($error);
+    $rv;
+  }
+
+  method generate_mouse_event (
+    Int()                   $x,
+    Int()                   $y,
+    Str()                   $name,
+    CArray[Pointer[GError]] $error = gerror
+  ) {
+    my glong ($xx, $yy) = ($x, $y);
+
+    clear_error;
+    my $rv = atspi_generate_mouse_event($xx, $yy, $name, $error);
+    set_error($error);
+    $rv;
+  }
+
+  method desktop {
+    self.get_desktop(0);
+  }
+
+  method get_desktop (Int $desktop, :$raw = False) {
+    my gint $d = $desktop;
+
+    propReturnObject(
+      atspi_get_desktop($d),
+      $raw,
+      |::('ATSPI::Accessible').getTypePair
+    );
+  }
+
+  method get_desktop_count {
+    atspi_get_desktop_count();
+  }
+
+  method get_desktop_list ( :$raw = False, :$garray = False ) {
+    returnGArray(
+      atspi_get_desktop_list(),
+      $raw,
+      $garray,
+      |::('ATSPI::Accessible').getTypePair
+    );
+  }
+
+  method set_reference_window (AtspiAccessible() $window) {
+    atspi_set_reference_window($window);
+  }
+
+}
+
+
+use MONKEY-TYPING;
+
+use ATSPI::DeviceListener;
+augment class ATSPI::DeviceListener {
+
+  method atspi_deregister_device_event_listener (
+    gpointer                $filter, # cw: There is a chance this is a Callable
+    CArray[Pointer[GError]] $error   = gerror
+  ) {
+    atspi_deregister_device_event_listener(
+      self.AtspiDeviceListener,
+      $filter,
+      $error
+    );
   }
 
   method atspi_deregister_keystroke_listener (
-    AtspiDeviceListener     $listener,
-    GArray                  $key_set,
-    AtspiKeyMaskType        $modmask,
-    AtspiKeyEventMask       $event_types,
-    CArray[Pointer[GError]] $error
+    GArray()                $key_set,
+    Int()                   $modmask,
+    Int()                   $event_types,
+    CArray[Pointer[GError]] $error        = gerror
   ) {
-    atspi_deregister_keystroke_listener($!ar, $key_set, $modmask, $event_types, $error);
-  }
+    my AtspiKeyMaskType  $m = $modmask;
+    my AtspiKeyEventMask $e = $event_types;
 
-  method atspi_generate_keyboard_event (
-    glong                   $keyval,
-    Str                     $keystring,
-    AtspiKeySynthType       $synth_type,
-    CArray[Pointer[GError]] $error
-  ) {
-    atspi_generate_keyboard_event($!ar, $keystring, $synth_type, $error);
-  }
-
-  method atspi_generate_mouse_event (
-    glong                   $x,
-    glong                   $y,
-    Str                     $name,
-    CArray[Pointer[GError]] $error
-  ) {
-    atspi_generate_mouse_event($!ar, $y, $name, $error);
-  }
-
-  method atspi_get_desktop {
-    atspi_get_desktop($!ar);
-  }
-
-  method atspi_get_desktop_count {
-    atspi_get_desktop_count($!ar);
-  }
-
-  method atspi_get_desktop_list {
-    atspi_get_desktop_list($!ar);
-  }
-
-  method atspi_key_definition_get_type {
-    atspi_key_definition_get_type();
+    atspi_deregister_keystroke_listener(
+      self.AtspiDeviceListener,
+      $key_set,
+      $m,
+      $e,
+      $error
+    );
   }
 
   method atspi_register_device_event_listener (
-    AtspiDeviceListener     $listener,
-    AtspiDeviceEventMask    $event_types,
-    Pointer                 $filter,
-    CArray[Pointer[GError]] $error
+    Int()                   $event_types,
+    gpointer                $filter,
+    CArray[Pointer[GError]] $error        = gerror;
   ) {
-    atspi_register_device_event_listener($!ar, $event_types, $filter, $error);
+    my AtspiDeviceEventMask $e = $event_types,
+
+    clear_error;
+    my $rv = atspi_register_device_event_listener(
+      self.AtspiDeviceListener,
+      $e,
+      $filter,
+      $error
+    );
+    set_error($error);
+    $rv;
   }
 
   method atspi_register_keystroke_listener (
-    AtspiDeviceListener      $listener,
-    GArray                   $key_set,
-    AtspiKeyMaskType         $modmask,
-    AtspiKeyEventMask        $event_types,
-    AtspiKeyListenerSyncType $sync_type,
-    CArray[Pointer[GError]]  $error
+    GArray()                $key_set,
+    Int()                   $modmask,
+    Int()                   $event_types,
+    Int()                   $sync_type,
+    CArray[Pointer[GError]] $error         = gerror
   ) {
-    atspi_register_keystroke_listener($!ar, $key_set, $modmask, $event_types, $sync_type, $error);
+    my AtspiKeyMaskType         $m = $modmask;
+    my AtspiKeyEventMask        $e = $event_types;
+    my AtspiKeyListenerSyncType $s = $sync_type;
+
+    clear_error;
+    my $rv = atspi_register_keystroke_listener(
+      self.AtspiDeviceListener,
+      $key_set,
+      $m,
+      $e,
+      $s,
+      $error
+    );
+    set_error($error);
+    $rv;
   }
 
-  method atspi_set_reference_window {
-    atspi_set_reference_window($!ar);
-  }
-
+}

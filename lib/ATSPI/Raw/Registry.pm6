@@ -62,7 +62,7 @@ sub atspi_get_desktop (gint $i)
   is      export
 { * }
 
-sub atspi_get_desktop_count
+sub atspi_get_desktop_count ()
   returns gint
   is      native(atspi)
   is      export
@@ -70,12 +70,6 @@ sub atspi_get_desktop_count
 
 sub atspi_get_desktop_list
   returns GArray
-  is      native(atspi)
-  is      export
-{ * }
-
-sub atspi_key_definition_get_type
-  returns GType
   is      native(atspi)
   is      export
 { * }
