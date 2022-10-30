@@ -8,6 +8,10 @@ unit package ATSPI::Raw::Definitions;
 
 constant atspi is export = 'atspi-1.0,v0';
 
+constant AtspiKeyMaskType     is export := guint;
+constant AtspiKeyEventMask    is export := guint;
+constant AtspiDeviceEventMask is export := guint;
+
 class AtspiAction       is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiCollection   is repr<CPointer> does GLib::Roles::Pointers is export { }
 class AtspiDocument     is repr<CPointer> does GLib::Roles::Pointers is export { }
