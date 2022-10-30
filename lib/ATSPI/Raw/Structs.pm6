@@ -158,13 +158,17 @@ class AtspiDeviceEvent is repr<CStruct> is export {
       is      native(atspi)
       is      export
     { * }
-    
+
     atspi_device_event_get_type();
   }
 }
 
 class AtspiDeviceLegacy is repr<CStruct> is export {
 	HAS AtspiDevice $.parent;
+}
+
+class AtspiDeviceX11 is repr<CStruct> is export {
+  HAS AtspiDevice $.parent;
 }
 
 # class AtspiDeviceLegacyClass is repr<CStruct> is export {
