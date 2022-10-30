@@ -53,3 +53,31 @@ class ATSPI::Main {
   }
 
 }
+
+use MONKEY-TYPING;
+
+use GIO::DBus::Connection;
+augment class GIO::DBus::Connection {
+
+  method setup_with_g_main (
+    GMainContext() $context
+  ) {
+    atspi_dbus_connection_setup_with_g_main(
+      self.GDBusConnection,
+      $context
+    );
+  }
+
+}
+
+use GIO::DBus::Server;
+augment class GIO::DBus::Server {
+
+  method server_setup_with_g_main (GMainContext() $context) {
+    atspi_dbus_server_setup_with_g_main(
+      self.GDBusServer,
+      $context
+    );
+  }
+
+}

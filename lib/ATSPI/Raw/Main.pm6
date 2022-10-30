@@ -65,3 +65,22 @@ sub atspi_set_timeout (
   is      native(atspi)
   is      export
 { * }
+
+
+### /usr/include/at-spi-2.0/atspi/atspi-gmain.h
+
+sub atspi_dbus_connection_setup_with_g_main (
+  GDBusConnection $connection,
+  GMainContext   $context
+)
+  is      native(atspi)
+  is      export
+{ * }
+
+sub atspi_dbus_server_setup_with_g_main (
+  GDBusServer   $server,
+  GMainContext $context
+)
+  is      native(atspi)
+  is      export
+{ * }
