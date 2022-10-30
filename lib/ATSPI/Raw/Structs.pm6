@@ -232,6 +232,18 @@ class AtspiKeyDefinition is repr<CStruct> is export {
 	has gint  $!keysym   ;
 	has Str   $!keystring;
 	has guint $!modifiers;
+
+  method get_type {
+    state ($n, $t);
+
+    sub atspi_key_definition_get_type
+      returns GType
+      is      native(atspi)
+      is      export
+    { * }
+
+    unstable_get_type( self.^name, &atspi_key_definition_get_type, $n, $t );
+  }
 }
 
 class AtspiKeySet is repr<CStruct> is export {
