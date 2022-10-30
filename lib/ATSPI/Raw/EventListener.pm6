@@ -3,7 +3,9 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
 use ATSPI::Raw::Definitions;
+use ATSPI::Raw::Structs;
 
 unit package ATSPI::Raw::EventListener;
 

@@ -63,7 +63,7 @@ class ATSPI::Application {
   method get_type is also<get-type> {
     state ($n, $t);
 
-    unstable_geta_type( self.^name, &atspi_application_get_type, $n, $t );
+    unstable_get_type( self.^name, &atspi_application_get_type, $n, $t );
   }
 
 }

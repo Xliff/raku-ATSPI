@@ -1,5 +1,8 @@
 use v6.c;
 
+use NativeCall;
+
+use GLib::Raw::Traits;
 use ATSPI::Raw::Types;
 use ATSPI::Raw::EventListener;
 
@@ -29,7 +32,7 @@ class ATSPI::EventListener {
 
   method new_simple (
     &callback,
-    &callback_destroyed = %DEFAULT-CALLBACKS<GDestroyNotify>
+    $callback_destroyed = %DEFAULT-CALLBACKS<GDestroyNotify>
   ) {
     my $atspi-event-listener = atspi_event_listener_new_simple(
       &callback,
@@ -56,8 +59,8 @@ class ATSPI::EventListener {
   multi method deregister_from_callback (
                              &callback,
     Str()                    $event_type,
-    CArray[Pointer[GError]]  $error       = gerror
-    gpointer                :$user_data   = gpointer,
+    CArray[Pointer[GError]]  $error       = gerror,
+    gpointer                :$user_data   = gpointer
   ) {
     samewith(&callback, $user_data, $event_type, $error);
   }
@@ -79,7 +82,7 @@ class ATSPI::EventListener {
   }
 
   method deregister_no_data (
-                            &callback
+                            &callback,
     Str()                   $event_type,
     CArray[Pointer[GError]] $error       = gerror
   ) {
@@ -105,7 +108,7 @@ class ATSPI::EventListener {
   ) {
     clear_error;
     my $mrv = so atspi_event_listener_register($!ael, $event_type, $error);
-    set_error($error)
+    set_error($error);
     $mrv;
   }
 
@@ -133,7 +136,7 @@ class ATSPI::EventListener {
     my $mrv = so atspi_event_listener_register_from_callback(
       &callback,
       $user_data,
-      $callback_destroyed,
+      &callback_destroyed,
       $event_type,
       $error
     );
@@ -220,14 +223,14 @@ class ATSPI::EventListener {
     clear_error;
     my $mrv = so atspi_event_listener_register_no_data(
       &callback,
-      $callback_destroyed,
+      &callback_destroyed,
       $event_type,
       $error
     );
     set_error($error);
     $mrv;
   }
-  
+
 }
 
 class ATSPI::Event {
